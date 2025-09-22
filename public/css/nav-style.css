@@ -1,0 +1,62 @@
+/* HTML болон BODY элементүүдийн margin, padding-ийг 0 болгох */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    /* Хэвтээ scrollbar үүсгэхгүй */
+    box-sizing: border-box;
+}
+
+/* Навигацийн тохиргоо */
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #333;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    /* 100vw биш 100% хэрэглэх */
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Навигацийн холбоосууд */
+nav a {
+    min-width: 100px;
+    flex-grow: 1;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: white;
+}
+
+/* Hover эффект */
+nav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* Жижиг дэлгэцийн (утас) тохиргоо */
+@media screen and (max-width: 600px) {
+    nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-direction: column;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    nav a {
+        text-align: center;
+        width: 100%;
+        padding: 14px 0;
+    }
+}

@@ -1,0 +1,117 @@
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+h1, h2 {
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    max-width: 100%; /* Дэлгэцнээс хэт гарахаас сэргийлнэ */
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    overflow-x: auto; /* Хэрэв багтахгүй бол scrollbar үүсгэх */
+}
+
+table th, table td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #ccc;
+    color: #333;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #e9e9e9;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #777;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#themeToggleBtn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #888;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#themeToggleBtn:hover {
+    background-color: #666;
+}
+
+.btn {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 15px 30px;
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05); /* Хулганаар дээр нь дарсан үед томрох эффект */
+}
+
+.btn:active {
+    background-color: #1c6388; /* Дарсан үед өнгө өөрчлөгдөх */
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}

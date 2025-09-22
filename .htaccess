@@ -1,0 +1,5 @@
+#RewriteEngine On
+#RewriteBase /attendft/
+
+# Хэрэв хүсэлт нь файл болон сан биш бол index.php руу чиглүүлнэ
+#RewriteRule ^$ index.php [L]
