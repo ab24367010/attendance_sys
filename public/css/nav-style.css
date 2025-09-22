@@ -1,50 +1,83 @@
-/* HTML болон BODY элементүүдийн margin, padding-ийг 0 болгох */
+/* HTML and BODY reset */
 html,
 body {
     margin: 0;
     padding: 0;
     width: 100%;
     overflow-x: hidden;
-    /* Хэвтээ scrollbar үүсгэхгүй */
     box-sizing: border-box;
 }
 
-/* Навигацийн тохиргоо */
+/* Navigation Configuration */
 nav {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #333;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
-    /* 100vw биш 100% хэрэглэх */
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Навигацийн холбоосууд */
+/* Navigation Links */
 nav a {
-    min-width: 100px;
+    min-width: 120px;
     flex-grow: 1;
     text-align: center;
-    padding: 14px 20px;
+    padding: 16px 24px;
     text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover Effect with Smooth Animation */
+nav a:hover {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Active Link Style */
+nav a.active {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
     color: white;
 }
 
-/* Hover эффект */
-nav a:hover {
-    background-color: #ddd;
-    color: black;
+/* Underline Animation */
+nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: 0;
+    left: 50%;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
 }
 
-/* Жижиг дэлгэцийн (утас) тохиргоо */
-@media screen and (max-width: 600px) {
+nav a:hover::after {
+    width: 80%;
+}
+
+nav a.active::after {
+    background: #fff;
+    width: 80%;
+}
+
+/* Mobile Design (Small Screens) */
+@media screen and (max-width: 768px) {
     nav {
         position: sticky;
         top: 0;
@@ -57,6 +90,51 @@ nav a:hover {
     nav a {
         text-align: center;
         width: 100%;
+        padding: 16px 0;
+        min-width: unset;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    nav a:last-child {
+        border-bottom: none;
+    }
+
+    nav a::after {
+        height: 2px;
+        bottom: 0;
+    }
+}
+
+/* Very Small Screens */
+@media screen and (max-width: 480px) {
+    nav a {
         padding: 14px 0;
+        font-size: 0.9rem;
+    }
+}
+
+/* Smooth scrolling for navigation links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Add some spacing for sections to account for sticky nav */
+section {
+    scroll-margin-top: 80px;
+}
+
+/* Loading state for navigation */
+.nav-loading {
+    background: linear-gradient(90deg, #34495e 25%, #3d566e 50%, #34495e 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
     }
 }
