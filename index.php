@@ -1,6 +1,10 @@
 <?php
 // DB холболтыг хийх
 require_once 'config/db.php';
+require_once 'config/auth.php';
+
+$auth = new Auth($pdo);
+$currentUser = $auth->getCurrentUser();
 
 // Хайлтын талбарын утга авах
 $searchTerm = isset($_POST['search']) ? $_POST['search'] : '';
@@ -82,6 +86,19 @@ $students = $studentStmt->fetchAll(PDO::FETCH_ASSOC);
     <header>
         <div class="logo">
             <h1>ATTENDFT</h1>
+        </div>
+        <div class="header-actions">
+            <?php if ($currentUser): ?>
+                <span class="welcome-message">Welcome, <?php echo htmlspecialchars($currentUser['full_name']); ?>!</span>
+                <?php if ($currentUser['role'] === 'teacher'): ?>
+                    <a href="dashboard/teacher.php" class="header-btn">Teacher Dashboard</a>
+                <?php else: ?>
+                    <a href="dashboard/student.php" class="header-btn">Student Dashboard</a>
+                <?php endif; ?>
+                <a href="logout.php" class="header-btn logout">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="header-btn">Login</a>
+            <?php endif; ?>
         </div>
     </header>
 

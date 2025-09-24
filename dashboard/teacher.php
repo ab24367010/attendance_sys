@@ -275,9 +275,19 @@ function deleteStudent($pdo, $studentId) {
             color: white;
         }
         
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
         }
         
         .modal {
@@ -383,6 +393,13 @@ function deleteStudent($pdo, $studentId) {
             text-decoration: none;
             font-weight: 600;
         }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -470,14 +487,16 @@ function deleteStudent($pdo, $studentId) {
                     </thead>
                     <tbody>
                         <?php foreach ($attendances as $attendance): ?>
-                            <tr>
+                            <tr id="attendance-row-<?php echo $attendance['id']; ?>">
                                 <td><?php echo htmlspecialchars($attendance['id']); ?></td>
                                 <td><?php echo htmlspecialchars($attendance['full_name'] ?? 'Unknown'); ?></td>
                                 <td><?php echo htmlspecialchars($attendance['student_id'] ?? 'N/A'); ?></td>
                                 <td><?php echo htmlspecialchars($attendance['entry_time']); ?></td>
-                                <td><?php echo htmlspecialchars($attendance['exit_time'] ?? 'Still inside'); ?></td>
+                                <td class="exit-time-<?php echo $attendance['id']; ?>">
+                                    <?php echo htmlspecialchars($attendance['exit_time'] ?? 'Still inside'); ?>
+                                </td>
                                 <td><?php echo htmlspecialchars($attendance['card_id']); ?></td>
-                                <td>
+                                <td class="status-<?php echo $attendance['id']; ?>">
                                     <?php if ($attendance['exit_time']): ?>
                                         <span style="color: green; font-weight: bold;">Completed</span>
                                     <?php else: ?>
@@ -486,7 +505,8 @@ function deleteStudent($pdo, $studentId) {
                                 </td>
                                 <td>
                                     <?php if (!$attendance['exit_time']): ?>
-                                        <button onclick="markExit(<?php echo $attendance['id']; ?>)" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Mark Exit</button>
+                                        <button onclick="markExit(<?php echo $attendance['id']; ?>)" 
+                                                class="btn btn-warning btn-sm mark-exit-btn-<?php echo $attendance['id']; ?>">Mark Exit</button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -529,7 +549,7 @@ function deleteStudent($pdo, $studentId) {
                                 <td><?php echo htmlspecialchars($student['created_at']); ?></td>
                                 <td>
                                     <button onclick="deleteStudent('<?php echo htmlspecialchars($student['student_id']); ?>', '<?php echo htmlspecialchars($student['full_name']); ?>')" 
-                                            class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Delete</button>
+                                            class="btn btn-danger btn-sm">Delete</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -593,6 +613,9 @@ function deleteStudent($pdo, $studentId) {
         </div>
     </div>
 
+    <!-- Loading indicator -->
+    <div id="loading" class="loading">Processing...</div>
+
     <script>
         // Modal functions
         function openAddStudentModal() {
@@ -626,11 +649,54 @@ function deleteStudent($pdo, $studentId) {
             }
         }
         
-        // Mark exit function
+        // Mark exit function with AJAX
         function markExit(attendanceId) {
             if (confirm('Mark this attendance record as completed (add exit time)?')) {
-                // This would need to be implemented as a separate endpoint
-                alert('This feature needs to be implemented in a separate endpoint.');
+                const loading = document.getElementById('loading');
+                const button = document.querySelector(`.mark-exit-btn-${attendanceId}`);
+                
+                loading.style.display = 'block';
+                button.disabled = true;
+                button.textContent = 'Processing...';
+                
+                const formData = new FormData();
+                formData.append('attendance_id', attendanceId);
+                formData.append('csrf_token', '<?php echo htmlspecialchars($csrfToken); ?>');
+                
+                fetch('mark_exit.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    
+                    if (data.success) {
+                        // Update the UI
+                        document.querySelector(`.exit-time-${attendanceId}`).textContent = data.exit_time;
+                        document.querySelector(`.status-${attendanceId}`).innerHTML = '<span style="color: green; font-weight: bold;">Completed</span>';
+                        button.remove();
+                        
+                        // Show success message
+                        showNotification('Exit time marked successfully!', 'success');
+                        
+                        // Update statistics
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        button.disabled = false;
+                        button.textContent = 'Mark Exit';
+                        showNotification(data.message || 'Failed to mark exit', 'error');
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    button.disabled = false;
+                    button.textContent = 'Mark Exit';
+                    console.error('Error:', error);
+                    showNotification('Network error occurred', 'error');
+                });
             }
         }
         
@@ -638,6 +704,77 @@ function deleteStudent($pdo, $studentId) {
         document.getElementById('full_name').addEventListener('input', function() {
             const fullName = this.value.toLowerCase().replace(/\s+/g, '_');
             document.getElementById('username').value = fullName;
+        });
+        
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: bold;
+                    z-index: 10000;
+                    display: none;
+                    max-width: 300px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(notification);
+            }
+
+            const colors = {
+                'info': '#3498db',
+                'success': '#27ae60',
+                'warning': '#f39c12',
+                'error': '#e74c3c'
+            };
+            
+            notification.style.backgroundColor = colors[type] || colors.info;
+            notification.textContent = message;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Auto-refresh attendance data every 30 seconds
+        setInterval(() => {
+            if (!document.querySelector('.modal[style*="block"]')) {
+                location.reload();
+            }
+        }, 30000);
+        
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('#addStudentModal form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const requiredFields = ['student_id', 'full_name', 'card_id', 'username', 'email', 'password'];
+                    let valid = true;
+                    
+                    requiredFields.forEach(field => {
+                        const input = document.getElementById(field);
+                        if (!input.value.trim()) {
+                            valid = false;
+                            input.style.borderColor = '#e74c3c';
+                        } else {
+                            input.style.borderColor = '#e1e5e9';
+                        }
+                    });
+                    
+                    if (!valid) {
+                        e.preventDefault();
+                        showNotification('Please fill in all required fields', 'error');
+                    }
+                });
+            }
         });
     </script>
 </body>

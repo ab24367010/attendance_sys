@@ -14,13 +14,55 @@ header {
     padding: 20px 0;
     text-align: center;
     box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
 }
 
-header h1 {
+header .logo h1 {
     margin: 0;
     font-size: 2.5rem;
     font-weight: 300;
     letter-spacing: 2px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.welcome-message {
+    font-size: 1rem;
+    color: #f8f9fa;
+    margin-right: 10px;
+}
+
+.header-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.header-btn.logout {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.9);
+}
+
+.header-btn.logout:hover {
+    background: rgba(192, 57, 43, 0.9);
 }
 
 h1, h2 {
@@ -216,8 +258,20 @@ footer a:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    header h1 {
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+    }
+    
+    header .logo h1 {
         font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .header-actions {
+        justify-content: center;
     }
     
     #searchInput {
@@ -240,6 +294,16 @@ footer a:hover {
 }
 
 @media (max-width: 480px) {
+    .header-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .welcome-message {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    
     #searchInput {
         width: 200px;
     }

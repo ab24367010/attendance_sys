@@ -19,6 +19,11 @@ if ($auth->isLoggedIn()) {
 $error = '';
 $success = '';
 
+// Check for logout success message
+if (isset($_GET['logged_out'])) {
+    $success = 'You have been logged out successfully.';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
     if (!Auth::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
@@ -191,6 +196,14 @@ $csrfToken = Auth::generateCSRFToken();
         .demo-credentials p {
             margin: 5px 0;
             color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .demo-credentials p:hover {
+            background-color: #e9ecef;
         }
 
         .demo-credentials strong {
@@ -294,9 +307,9 @@ $csrfToken = Auth::generateCSRFToken();
         </form>
 
         <div class="demo-credentials">
-            <h4>Demo Credentials</h4>
-            <p><strong>Teacher:</strong> teacher1 / password123</p>
-            <p><strong>Student:</strong> john_smith / password123</p>
+            <h4>Demo Credentials (Click to auto-fill)</h4>
+            <p onclick="fillCredentials('teacher1', 'password123')"><strong>Teacher:</strong> teacher1 / password123</p>
+            <p onclick="fillCredentials('john_smith', 'password123')"><strong>Student:</strong> john_smith / password123</p>
         </div>
 
         <div class="back-link">
@@ -318,26 +331,10 @@ $csrfToken = Auth::generateCSRFToken();
             }
         }
 
-        // Auto-fill demo credentials when clicking on them
-        document.addEventListener('DOMContentLoaded', function() {
-            const demoCredentials = document.querySelectorAll('.demo-credentials p');
-            const identifierInput = document.getElementById('identifier');
-            const passwordInput = document.getElementById('password');
-            
-            demoCredentials.forEach(p => {
-                p.style.cursor = 'pointer';
-                p.addEventListener('click', function() {
-                    const text = this.textContent;
-                    if (text.includes('teacher1')) {
-                        identifierInput.value = 'teacher1';
-                        passwordInput.value = 'password123';
-                    } else if (text.includes('john_smith')) {
-                        identifierInput.value = 'john_smith';
-                        passwordInput.value = 'password123';
-                    }
-                });
-            });
-        });
+        function fillCredentials(username, password) {
+            document.getElementById('identifier').value = username;
+            document.getElementById('password').value = password;
+        }
 
         // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {
