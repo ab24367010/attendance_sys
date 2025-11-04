@@ -1,7 +1,7 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS irts CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS attendance_sys CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE irts;
+USE attendance_sys;
 
 -- Users table for authentication
 CREATE TABLE users (
