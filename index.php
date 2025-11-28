@@ -1,15 +1,14 @@
 <?php
-// DB холболтыг хийх
-require_once 'config/db.php';
-require_once 'config/auth.php';
+$pageTitle = 'Home - Attendance System';
+$includeRealTime = true;
+
+require_once 'includes/functions.php';
 
 $auth = new Auth($pdo);
 $currentUser = $auth->getCurrentUser();
+$searchTerm = isset($_POST['search']) ? sanitize($_POST['search']) : '';
 
-// Хайлтын талбарын утга авах
-$searchTerm = isset($_POST['search']) ? $_POST['search'] : '';
-
-// Ирц бүртгэлийг авах (JOIN ашиглан оюутны нэрийг харуулах)
+// Get attendance records
 $sql = "
     SELECT
         attendance.id,
@@ -20,27 +19,15 @@ $sql = "
         attendance.card_id
     FROM attendance
     LEFT JOIN students ON attendance.student_id = students.student_id
-    ORDER BY attendance.entry_time DESC
 ";
 
 if ($searchTerm) {
-    // Хайлт хийх, карт ID эсвэл оюутны нэр эсвэл оюутны ID-ээр фильтер хийх
-    $sql = "
-        SELECT
-            attendance.id,
-            attendance.entry_time,
-            attendance.exit_time,
-            students.full_name,
-            students.student_id,
-            attendance.card_id
-        FROM attendance
-        LEFT JOIN students ON attendance.student_id = students.student_id
-        WHERE attendance.card_id LIKE :searchTerm 
-           OR students.full_name LIKE :searchTerm 
-           OR students.student_id LIKE :searchTerm
-        ORDER BY attendance.entry_time DESC
-    ";
+    $sql .= " WHERE attendance.card_id LIKE :searchTerm
+           OR students.full_name LIKE :searchTerm
+           OR students.student_id LIKE :searchTerm";
 }
+
+$sql .= " ORDER BY attendance.entry_time DESC";
 
 $stmt = $pdo->prepare($sql);
 
@@ -70,65 +57,25 @@ $studentStmt->execute();
 $students = $studentStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once 'includes/header.php'; ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AttendFT</title>
-    <link rel="icon" href="public/images/favicon.ico" type="image/x-icon">
-    <link id="themeStylesheet" rel="stylesheet" href="public/css/style-light.css"> <!-- Default light theme -->
-    <link id="navStylesheet" rel="stylesheet" href="public/css/nav-style.css">
-</head>
-
-<body>
-    <header>
-        <div class="logo">
-            <h1>ATTENDFT</h1>
-        </div>
-        <div class="header-actions">
-            <?php if ($currentUser): ?>
-                <span class="welcome-message">Welcome, <?php echo htmlspecialchars($currentUser['full_name']); ?>!</span>
-                <?php if ($currentUser['role'] === 'teacher'): ?>
-                    <a href="dashboard/teacher.php" class="header-btn">Teacher Dashboard</a>
-                <?php else: ?>
-                    <a href="dashboard/student.php" class="header-btn">Student Dashboard</a>
-                <?php endif; ?>
-                <a href="logout.php" class="header-btn logout">Logout</a>
-            <?php else: ?>
-                <a href="login.php" class="header-btn">Login</a>
-            <?php endif; ?>
-        </div>
-    </header>
-
-    <!-- Navigation Bar -->
-    <nav>
-        <a href="#attendence-list">Attendance</a>
-        <a href="#student-information">Students</a>
-        <a href="#exportSection">Export Data</a>
-    </nav>
-
-    <button id="themeToggleBtn">Dark Theme</button>
-    
     <!-- Хайлтын талбар -->
     <div style="text-align: center; margin: 20px 0;">
-        <form method="POST" action="" id="searchForm" style="display: inline-block;">
-            <input type="text" name="search" id="searchInput" 
-                   placeholder="Name, Card ID or student number" 
-                   value="<?php echo htmlspecialchars($searchTerm); ?>"
-                   style="padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 5px;">
-            <button type="submit" style="padding: 10px 20px; margin-left: 10px;">Search</button>
+        <form method="POST" action="" id="searchForm">
+            <input type="text" name="search" id="searchInput"
+                   placeholder="Name, Card ID or student number"
+                   value="<?php echo htmlspecialchars($searchTerm); ?>">
+            <button type="submit">Search</button>
             <?php if ($searchTerm): ?>
-                <a href="index.php" style="margin-left: 10px; color: #3498db; text-decoration: none;">Clear</a>
+                <a href="index.php" class="btn-link">Clear</a>
             <?php endif; ?>
         </form>
     </div>
 
-    <section id="attendence-list">
+    <section id="attendance-list">
         <h1>Attendance List</h1>
         <?php if (count($attendances) > 0): ?>
-            <table border="1">
+            <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -151,9 +98,9 @@ $students = $studentStmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($attendance['card_id']); ?></td>
                             <td>
                                 <?php if ($attendance['exit_time']): ?>
-                                    <span style="color: green; font-weight: bold;">Completed</span>
+                                    <span class="status-completed">Completed</span>
                                 <?php else: ?>
-                                    <span style="color: orange; font-weight: bold;">In Progress</span>
+                                    <span class="status-in-progress">In Progress</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -161,14 +108,14 @@ $students = $studentStmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         <?php else: ?>
-            <p style="text-align: center; font-style: italic;">No attendance records found.</p>
+            <p class="loading">No attendance records found.</p>
         <?php endif; ?>
     </section>
 
     <section id="student-information">
         <h2>Student Information</h2>
         <?php if (count($students) > 0): ?>
-            <table border="1">
+            <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -191,24 +138,13 @@ $students = $studentStmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         <?php else: ?>
-            <p style="text-align: center; font-style: italic;">No students found.</p>
+            <p class="loading">No students found.</p>
         <?php endif; ?>
     </section>
 
-    <!-- Excel файл татах -->
-    <section id="exportSection">
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="dashboard/export.php" class="btn">Download CSV file</a>
-        </div>
+    <!-- Export Section -->
+    <section id="exportSection" style="text-align: center; margin: 30px 0;">
+        <a href="teacher/export.php" class="btn">Download CSV file</a>
     </section>
-    
-    <script src="public/js/theme.js" defer></script>
-    <script src="public/js/real-time.js" defer></script>
-    
-    <footer>
-        <p>&copy; 2025 Attendft. All rights reserved.</p>
-        <p>Contact us at: <a href="mailto:ab24367010@ga.ttc.ac.jp">ab24367010@ga.ttc.ac.jp</a></p>
-    </footer>
-</body>
 
-</html>
+<?php require_once 'includes/footer.php'; ?>

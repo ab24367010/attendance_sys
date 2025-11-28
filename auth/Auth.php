@@ -230,7 +230,14 @@ class Auth {
     public function requireTeacher() {
         $this->requireRole('teacher');
     }
-    
+
+    /**
+     * Require student role
+     */
+    public function requireStudent() {
+        $this->requireRole('student');
+    }
+
     /**
      * Logout user
      */

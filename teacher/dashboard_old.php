@@ -1,13 +1,11 @@
 <?php
-// dashboard/teacher.php
-require_once '../config/db.php';
-require_once '../config/auth.php';
+require_once '../includes/functions.php';
 
 $auth = new Auth($pdo);
 $auth->requireTeacher();
 
 $currentUser = $auth->getCurrentUser();
-$searchTerm = isset($_POST['search']) ? trim($_POST['search']) : '';
+$searchTerm = isset($_POST['search']) ? sanitize($_POST['search']) : '';
 
 // Handle student management actions
 $action_message = '';

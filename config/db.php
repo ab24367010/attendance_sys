@@ -1,11 +1,13 @@
 <?php
-include 'config.php'; // config.php файлыг оруулж байна.
+require_once __DIR__ . '/config.php';
 
 try {
-    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8';
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     $pdo = new PDO($dsn, DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Асуудал гарсан үед алдаа мэдээлэл харах.
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("❌ DATABASE do not connected " . $e->getMessage());
+    error_log("Database connection error: " . $e->getMessage());
+    die("❌ DATABASE connection failed");
 }
 ?>

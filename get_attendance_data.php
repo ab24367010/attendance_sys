@@ -1,8 +1,7 @@
 <?php
-require_once 'config/db.php';
+require_once 'includes/functions.php';
 
-// Хайлт хийх утга авах
-$searchTerm = isset($_POST['search']) ? trim($_POST['search']) : '';
+$searchTerm = isset($_POST['search']) ? sanitize($_POST['search']) : '';
 
 // SQL запрос - Ирцийн мэдээллийг авах
 $sql = "

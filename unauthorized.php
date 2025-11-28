@@ -1,7 +1,5 @@
 <?php
-// unauthorized.php
-require_once 'config/db.php';
-require_once 'config/auth.php';
+require_once 'includes/functions.php';
 
 $auth = new Auth($pdo);
 $currentUser = $auth->getCurrentUser();
@@ -13,7 +11,7 @@ $currentUser = $auth->getCurrentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unauthorized - AttendFT</title>
-    <link rel="icon" href="public/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -136,9 +134,9 @@ $currentUser = $auth->getCurrentUser();
         <div class="action-buttons">
             <?php if ($currentUser): ?>
                 <?php if ($currentUser['role'] === 'teacher'): ?>
-                    <a href="dashboard/teacher.php" class="btn btn-primary">Go to Teacher Dashboard</a>
+                    <a href="teacher/dashboard.php" class="btn btn-primary">Go to Teacher Dashboard</a>
                 <?php else: ?>
-                    <a href="dashboard/student.php" class="btn btn-primary">Go to Student Dashboard</a>
+                    <a href="student/dashboard.php" class="btn btn-primary">Go to Student Dashboard</a>
                 <?php endif; ?>
                 <a href="logout.php" class="btn btn-secondary">Logout</a>
             <?php else: ?>

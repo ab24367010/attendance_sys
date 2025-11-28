@@ -1,12 +1,8 @@
 <?php
-require_once 'config/db.php';
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once 'includes/functions.php';
 
 // Get card ID from POST request
-$cardID = isset($_POST['cardID']) ? trim($_POST['cardID']) : '';
+$cardID = isset($_POST['cardID']) ? sanitize($_POST['cardID']) : '';
 
 if (empty($cardID)) {
     http_response_code(400);

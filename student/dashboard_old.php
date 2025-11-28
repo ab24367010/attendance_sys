@@ -1,7 +1,5 @@
 <?php
-// dashboard/student.php
-require_once '../config/db.php';
-require_once '../config/auth.php';
+require_once '../includes/functions.php';
 
 $auth = new Auth($pdo);
 $auth->requireLogin();
